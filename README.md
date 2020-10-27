@@ -1,11 +1,11 @@
 # MLP Visualization
-Visualizes the firing of a multi-layer perceptron network.
+A program that visualizes the firing of a multi-layer perceptron network.
 
 ## Examples
 
 ![XOR](xor.gif?raw=true "XOR")
 
-Here's a MLP modelling a XOR gate. In this example, the input is 0, 1 and the output is 1. The nodes turn red to signify the firing of a neuron.
+Here's an MLP network modelling a XOR gate. In this example, the input is 0, 1 and the output is 1 (neuron fired). The nodes turn red to signify the firing of a neuron.
 
 ![Network](network.gif?raw=true "Network")
 
