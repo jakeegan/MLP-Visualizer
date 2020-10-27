@@ -1,0 +1,116 @@
+<html>
+<head>
+    <title>MLP Visualizer</title>
+</head>
+<body>
+<canvas id="myCanvas" width="750" height="450" style="border: 5px solid #000000;">Update your browser to support HTML5 Canvas</canvas>
+</body>
+<script>
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+var net = {{net | tojson}};
+var weights = {{weights | tojson}};
+var net_width = {{net_width | tojson}};
+var net_height = {{net_height | tojson}};
+var node_radius = 26;
+var text_font = "18px Arial";
+var idx = 0;
+var timer = setInterval(fire_nodes, 1500);
+
+// Get locations of nodes
+node_locations = [];
+for(var i = 0; i < net.length; i++) {
+    var layer = net[i];
+    node_location = [];
+    for(var j = 0; j < layer.length; j++) {
+        y_spacing = node_radius*3;
+        x_spacing = node_radius*6;
+        y_offset = y_spacing*(net_height-layer.length)/2 + canvas.height/4 + y_spacing/1.5;
+        x_offset = x_spacing*(net_width-net.length)/2 + canvas.width/4; + x_spacing/3;
+        x_pos = x_spacing*i + x_offset;
+        y_pos = y_spacing*j + y_offset;
+        node_location.push([x_pos, y_pos]);
+    }
+    node_locations.push(node_location);
+}
+
+// Draw connections
+for(var i = 1; i < node_locations.length; i++) {
+    var node_location = node_locations[i];
+    for(var j = 0; j < node_location.length; j++) {
+        for(var k = 0; k < node_locations[i-1].length; k++){
+            // Draw connections
+            ctx.moveTo(node_locations[i-1][k][0], node_locations[i-1][k][1]);
+            ctx.lineTo(node_locations[i][j][0], node_locations[i][j][1]);
+            ctx.stroke();
+            // Draw weights
+            text_y = node_locations[i-1][k][1] + 0.75*(node_locations[i][j][1] - node_locations[i-1][k][1]);
+            text_x = node_locations[i-1][k][0] + 0.75*(node_locations[i][j][0] - node_locations[i-1][k][0]);
+            ctx.fillStyle = "black",
+            ctx.font = text_font;
+            ctx.textAlign = "center";
+            ctx.fillText(weights[i-1][j][k+1], text_x, text_y);
+        }
+    }
+}
+
+// Draw nodes
+for(var i = 0; i < node_locations.length; i++) {
+    var node_location = node_locations[i];
+    for(var j = 0; j < node_location.length; j++) {
+        // Draw node
+        ctx.beginPath();
+        ctx.arc(node_locations[i][j][0], node_locations[i][j][1], node_radius, 0, 2 * Math.PI);
+        ctx.fillStyle = "gray",
+        ctx.fill();
+        ctx.stroke();
+        // Draw Weights
+        if (i > 0){
+            ctx.fillStyle = "black",
+            ctx.font = text_font;
+            ctx.textAlign = "center";
+            ctx.fillText(-weights[i-1][j][0], node_locations[i][j][0], node_locations[i][j][1]);
+        } else {
+            ctx.fillStyle = "black",
+            ctx.font = text_font;
+            ctx.textAlign = "center";
+            ctx.fillText(net[i][j], node_locations[i][j][0], node_locations[i][j][1]);
+        }
+    }
+}
+
+function fire_nodes() {
+    var node_location = node_locations[idx];
+    for(var j = 0; j < node_location.length; j++) {
+        // Draw node
+        ctx.beginPath();
+        ctx.arc(node_locations[idx][j][0], node_locations[idx][j][1], node_radius, 0, 2 * Math.PI);
+        if (net[idx][j] == 1){
+            ctx.fillStyle = "red";
+        } else {
+            ctx.fillStyle = "gray";
+        }
+        ctx.fill();
+        ctx.stroke();
+
+        // Draw weight
+        if (idx > 0){
+            ctx.fillStyle = "black",
+            ctx.font = text_font;
+            ctx.textAlign = "center";
+            ctx.fillText(-weights[idx-1][j][0], node_locations[idx][j][0], node_locations[idx][j][1]);
+        } else {
+            ctx.fillStyle = "black",
+            ctx.font = text_font;
+            ctx.textAlign = "center";
+            ctx.fillText(net[idx][j], node_locations[idx][j][0], node_locations[idx][j][1]);
+        }
+    }
+    idx += 1
+    if (idx == net.length){
+        idx = 0
+    }
+}
+
+</script>
+</html>
