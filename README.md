@@ -1,4 +1,4 @@
-# MLP Visualization
+# MLP Visualizer
 A program that visualizes the firing of a multi-layer perceptron network.
 
 ## Examples
